@@ -25,6 +25,11 @@ class MyApp extends StatelessWidget {
                 fontFamily: 'RobotoCondensed',
                 fontWeight: FontWeight.bold,
               ),
+              subtitle2: const TextStyle(
+                fontSize: 16,
+                fontFamily: 'RobotoCondensed',
+                color: Colors.black87,
+              ),
               bodyText1: const TextStyle(
                 color: Color.fromRGBO(20, 51, 51, 1),
               ),
