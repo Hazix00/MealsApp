@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../models/meal.dart';
+import 'meal_item_infos.dart';
 
 class MealItem extends StatelessWidget {
   final Meal meal;
@@ -13,28 +14,6 @@ class MealItem extends StatelessWidget {
 
   String _getEnumStrVal(Enum enumval) {
     return enumval.toString().split('.').last;
-  }
-
-  Widget infosItem(BuildContext context,
-      {required IconData icon, required String text}) {
-    return SizedBox(
-      height: 50,
-      child: Row(
-        children: [
-          Icon(
-            icon,
-            color: Colors.black87,
-          ),
-          const SizedBox(
-            width: 10,
-          ),
-          Text(
-            text,
-            style: Theme.of(context).textTheme.subtitle2,
-          )
-        ],
-      ),
-    );
   }
 
   @override
@@ -69,10 +48,15 @@ class MealItem extends StatelessWidget {
                     bottom: 25,
                     child: Container(
                       width: 300,
-                      padding: const EdgeInsets.all(10),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 5,
+                        horizontal: 20,
+                      ),
                       color: Colors.black.withAlpha(150),
                       child: Text(
                         meal.title,
+                        softWrap: true,
+                        overflow: TextOverflow.fade,
                         style: Theme.of(context)
                             .copyWith(
                               textTheme: const TextTheme(
@@ -92,19 +76,19 @@ class MealItem extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  infosItem(
-                    context,
+                  MealItemInfos(
+                    context: context,
                     icon: Icons.timer,
-                    text: meal.duration.toString(),
+                    text: meal.duration.toString() + ' min',
                   ),
-                  infosItem(
-                    context,
+                  MealItemInfos(
+                    context: context,
                     icon: Icons.work,
                     text: _getEnumStrVal(meal.complexity),
                   ),
-                  infosItem(
-                    context,
-                    icon: Icons.euro,
+                  MealItemInfos(
+                    context: context,
+                    icon: Icons.attach_money,
                     text: _getEnumStrVal(meal.affordability),
                   ),
                 ],
