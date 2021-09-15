@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mealsapp/screens/categories/categories_screen.dart';
-import 'package:mealsapp/screens/favorites/favorites_screen.dart';
+
+import '../../shared/main_drawer.dart';
+import '../categories/categories_screen.dart';
+import '../favorites/favorites_screen.dart';
 
 class MainTabsScreen extends StatefulWidget {
   const MainTabsScreen({Key? key}) : super(key: key);
@@ -29,6 +31,7 @@ class _MainTabsScreenState extends State<MainTabsScreen> {
       appBar: AppBar(
         title: const Text('DeliMeal'),
       ),
+      drawer: const MainDrawer(),
       body: _pages[_selectedPageIndex],
       bottomNavigationBar: BottomNavigationBar(
         onTap: _selectPage,
