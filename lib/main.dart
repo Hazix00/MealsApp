@@ -1,14 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:mealsapp/screens/filters/filters_screen.dart';
-import 'package:mealsapp/screens/main-tabs/main_tabs_screen.dart';
-import 'package:mealsapp/screens/meal_details/meal_details_screen.dart';
 
-import 'screens/category-meals/categories_meals_screen.dart';
+import './screens/filters/filters_screen.dart';
+import './screens/main-tabs/main_tabs_screen.dart';
+import './screens/meal_details/meal_details_screen.dart';
+import './shared/dummy_data.dart';
+import './models/meal.dart';
+import './screens/category-meals/categories_meals_screen.dart';
 
 void main() => runApp(const MyApp());
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  Map<String, bool> _filters = {
+    'gluten': false,
+    'vegan': false,
+    'vegeterian': false,
+    'lactose': false,
+  };
+  List<Meal> _availableMeals = DUMMY_MEALS;
+  bool _getFilterValue(String key) {
+    return _filters.entries.firstWhere((e) => e.key == key).value;
+  }
+
+  void _setFilters(Map<String, bool> filterData) {
+    setState(() {
+      _filters = filterData;
+      _availableMeals = DUMMY_MEALS.where((meal) {
+        if (!meal.isGlutenFree && _getFilterValue('gluten')) return false;
+        if (!meal.isVegan && _getFilterValue('vegan')) return false;
+        if (!meal.isVegetarian && _getFilterValue('vegeterian')) return false;
+        if (!meal.isLactoseFree && _getFilterValue('lactose')) return false;
+        return true;
+      }).toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +74,10 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const MainTabsScreen(),
-        FiltersScreen.routeName: (context) => const FiltersScreen(),
-        CategoryMealsScreen.routeName: (context) => const CategoryMealsScreen(),
+        FiltersScreen.routeName: (context) =>
+            FiltersScreen(filterData: _filters, setFilters: _setFilters),
+        CategoryMealsScreen.routeName: (context) =>
+            CategoryMealsScreen(_availableMeals),
         MealDetailsScreen.routeName: (context) => const MealDetailsScreen()
       },
     );
