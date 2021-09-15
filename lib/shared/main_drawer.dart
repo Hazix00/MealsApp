@@ -8,7 +8,7 @@ class MainDrawer extends StatelessWidget {
 
   void _navigate(BuildContext context, String route) {
     if (ModalRoute.of(context)!.settings.name != route) {
-      Navigator.pushNamed(context, route);
+      Navigator.pushReplacementNamed(context, route);
     }
   }
 
