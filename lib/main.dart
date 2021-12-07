@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:mealsapp/cubit/favorites_cubit.dart';
+import 'package:path_provider/path_provider.dart';
 
 import './screens/filters/filters_screen.dart';
 import './screens/main-tabs/main_tabs_screen.dart';
@@ -7,7 +11,17 @@ import './shared/dummy_data.dart';
 import './models/meal.dart';
 import './screens/category-meals/categories_meals_screen.dart';
 
-void main() => runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final storage = await HydratedStorage.build(
+    storageDirectory: await getApplicationDocumentsDirectory(),
+  );
+
+  HydratedBlocOverrides.runZoned(
+    () => runApp(MyApp()),
+    storage: storage,
+  );
+}
 
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -43,43 +57,46 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'DeliMeals',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSwatch(
-          primarySwatch: Colors.pink,
-          accentColor: Colors.amber,
+    return BlocProvider(
+      create: (context) => FavoritesCubit(),
+      child: MaterialApp(
+        title: 'DeliMeals',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSwatch(
+            primarySwatch: Colors.pink,
+            accentColor: Colors.amber,
+          ),
+          canvasColor: const Color.fromRGBO(255, 254, 255, 1),
+          fontFamily: 'Raleway',
+          textTheme: ThemeData.light().textTheme.copyWith(
+                subtitle1: const TextStyle(
+                  fontSize: 20,
+                  fontFamily: 'RobotoCondensed',
+                  fontWeight: FontWeight.bold,
+                ),
+                subtitle2: const TextStyle(
+                  fontSize: 16,
+                  fontFamily: 'RobotoCondensed',
+                  color: Colors.black87,
+                ),
+                bodyText1: const TextStyle(
+                  color: Color.fromRGBO(20, 51, 51, 1),
+                ),
+                bodyText2: const TextStyle(
+                  color: Color.fromRGBO(20, 51, 51, 1),
+                ),
+              ),
         ),
-        canvasColor: const Color.fromRGBO(255, 254, 255, 1),
-        fontFamily: 'Raleway',
-        textTheme: ThemeData.light().textTheme.copyWith(
-              subtitle1: const TextStyle(
-                fontSize: 20,
-                fontFamily: 'RobotoCondensed',
-                fontWeight: FontWeight.bold,
-              ),
-              subtitle2: const TextStyle(
-                fontSize: 16,
-                fontFamily: 'RobotoCondensed',
-                color: Colors.black87,
-              ),
-              bodyText1: const TextStyle(
-                color: Color.fromRGBO(20, 51, 51, 1),
-              ),
-              bodyText2: const TextStyle(
-                color: Color.fromRGBO(20, 51, 51, 1),
-              ),
-            ),
+        initialRoute: '/',
+        routes: {
+          '/': (context) => const MainTabsScreen(),
+          FiltersScreen.routeName: (context) =>
+              FiltersScreen(filterData: _filters, setFilters: _setFilters),
+          CategoryMealsScreen.routeName: (context) =>
+              CategoryMealsScreen(_availableMeals),
+          MealDetailsScreen.routeName: (context) => const MealDetailsScreen()
+        },
       ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const MainTabsScreen(),
-        FiltersScreen.routeName: (context) =>
-            FiltersScreen(filterData: _filters, setFilters: _setFilters),
-        CategoryMealsScreen.routeName: (context) =>
-            CategoryMealsScreen(_availableMeals),
-        MealDetailsScreen.routeName: (context) => const MealDetailsScreen()
-      },
     );
   }
 }

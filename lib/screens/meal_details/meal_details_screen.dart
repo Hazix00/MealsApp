@@ -1,4 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mealsapp/cubit/favorites_cubit.dart';
 
 import '../../models/meal.dart';
 
@@ -43,6 +46,29 @@ class MealDetailsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(meal!.title),
+        actions: [
+          IconButton(
+            onPressed: () {
+              final favoritesCubit = BlocProvider.of<FavoritesCubit>(context);
+              if (favoritesCubit.state.favoriteMeals.contains(meal.id)) {
+                favoritesCubit.removeFromFavorites(meal.id);
+              } else {
+                favoritesCubit.addToFavorites(meal.id);
+              }
+            },
+            icon: BlocBuilder<FavoritesCubit, FavoritesState>(
+              builder: (context, state) {
+                final color = state.favoriteMeals.contains(meal.id)
+                    ? Colors.yellow
+                    : Colors.grey;
+                return Icon(
+                  Icons.star,
+                  color: color,
+                );
+              },
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -50,9 +76,12 @@ class MealDetailsScreen extends StatelessWidget {
             SizedBox(
               height: 300,
               width: double.infinity,
-              child: Image.network(
-                meal.imageUrl,
+              child: CachedNetworkImage(
+                imageUrl: meal.imageUrl,
                 fit: BoxFit.cover,
+                progressIndicatorBuilder: (context, url, downloadProgress) =>
+                    CircularProgressIndicator(value: downloadProgress.progress),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
               ),
             ),
             buildSectionTitle(context, 'Ingredients'),
